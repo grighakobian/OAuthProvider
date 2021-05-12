@@ -8,6 +8,22 @@
 
 import UIKit
 
+/*
+ Client Registration
+
+ client_id    J-zsG9KYFFrZtJGK0MmUa6Hs
+ client_secret    3pLdcM8Zwu_RNgV0G51cq7q6m4fiNGap9rMCHxLXL25RDjW4
+ User Account
+
+ login    awful-chinchilla@example.com
+ password    Adventurous-Skimmer-42
+ 
+*/
+
+import OAuthProvider
+
+
+
 class ViewController: UIViewController {
 
     override func viewDidLoad() {
