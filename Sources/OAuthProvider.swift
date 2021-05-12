@@ -41,6 +41,7 @@ public protocol OAuthProviderType: class {
 }
 
 open class OAuthProvider<Target: OAuthTargetType> {
+    
     /// Network provider state
     ///
     /// - unauthorized: Unathorized state
@@ -52,14 +53,19 @@ open class OAuthProvider<Target: OAuthTargetType> {
     
     /// Thread safe lock
     public let lock: NSRecursiveLock
+    
     /// The network provider state
     public var state: State
+    
     /// The pending request queue
     public var operationQueue: [Operation]
+    
     /// The moya provider for iris API
     public let provider: MoyaProvider<Target>
+    
     /// The user credentials store used to check access token is valid or not
     public let accessTokenStore: AccessTokenStore
+    
     /// Continue request in background
     public var continueRequestsInBackground: Bool
         

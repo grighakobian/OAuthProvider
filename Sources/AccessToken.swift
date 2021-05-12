@@ -20,8 +20,10 @@
 
 
 public protocol AccessTokenType: Codable {
+    
     /// The access token issued by the authorization server.
     var accessToken: String { get }
+    
     /// The access token type provides the client with the information
     /// required to successfully utilize the access token to make a protected
     /// resource request (along with type-specific attributes).  The client
@@ -34,14 +36,17 @@ public protocol AccessTokenType: Codable {
     ///     Host: example.com
     ///     Authorization: Bearer mF_9.B5f-4.1JqM
     var tokenType: String? { get }
+    
     /// If the access token will expire, then it is useful to return a refresh token which applications can use to obtain another access token. However, tokens issued with the implicit grant cannot be issued a refresh token.
     var refreshToken: String? { get }
+    
     /// The lifetime in seconds of the access token. For
     /// example, the value "3600" denotes that the access token will
     /// expire in one hour from the time the response was generated.
     /// If omitted, the authorization server SHOULD provide the
     /// expiration time via other means or document the default value.
     var expiresIn: Double? { get }
+    
     /// If the scope the user granted is identical to the scope the app requested, this parameter is optional. If the granted scope is different from the requested scope, such as if the user modified the scope, then this parameter is required.
     var scope: String? { get }
 }
