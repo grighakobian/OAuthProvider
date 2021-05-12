@@ -15,6 +15,5 @@ Pod::Spec.new do |s|
   s.ios.deployment_target = '12.0'
   
   s.source_files = 'Sources/**/*'
-  s.frameworks = 'Foundation'
   s.dependency 'Moya', '~> 14.0'
 end
