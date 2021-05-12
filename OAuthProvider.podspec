@@ -24,19 +24,12 @@ TODO: Add long description of the pod here.
   s.homepage         = 'https://github.com/grighakobian/OAuthProvider'
   # s.screenshots     = 'www.example.com/screenshots_1', 'www.example.com/screenshots_2'
   s.license          = { :type => 'MIT', :file => 'LICENSE' }
-  s.author           = { 'grighakobian' => 'grighakobian@gmail.com' }
+  s.author           = { 'Grigor Hakobyan' => 'grighakobian@gmail.com' }
   s.source           = { :git => 'https://github.com/grighakobian/OAuthProvider.git', :tag => s.version.to_s }
   # s.social_media_url = 'https://twitter.com/<TWITTER_USERNAME>'
 
   s.ios.deployment_target = '12.0'
-
-  s.source_files = 'OAuthProvider/Classes/**/*'
-  
-  # s.resource_bundles = {
-  #   'OAuthProvider' => ['OAuthProvider/Assets/*.png']
-  # }
-
-  # s.public_header_files = 'Pod/Classes/**/*.h'
+  s.source_files = 'Sources/**/*'
   s.frameworks = 'Foundation'
   s.dependency 'Moya', '~> 14.0'
 end
