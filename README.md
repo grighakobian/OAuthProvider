@@ -22,7 +22,7 @@ pod 'OAuthProvider'
 
 ## Author
 
-grighakobian, grighakobian@gmail.com
+Grigor Hakobyan, grighakobian@gmail.com
 
 ## License
 
