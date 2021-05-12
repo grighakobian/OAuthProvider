@@ -3,8 +3,9 @@ Pod::Spec.new do |s|
   s.version          = '0.1.0'
   s.summary          = 'A short description of OAuthProvider.'
 
-  s.description      = <<-DESC TODO: Add long description of the pod here. DESC
-
+  s.description      = <<-DESC
+ TODO: Add long description of the pod here.
+                        DESC
   s.homepage         = 'https://github.com/grighakobian/OAuthProvider'
   s.license          = { :type => 'MIT', :file => 'LICENSE' }
   s.author           = { 'Grigor Hakobyan' => 'grighakobian@gmail.com' }
