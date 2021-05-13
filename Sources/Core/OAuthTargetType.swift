@@ -22,6 +22,7 @@ import Moya
 
 /// The protocol used to define the specifications necessary for a `OAuthProvider`.
 public protocol OAuthTargetType: TargetType, AccessTokenStorable, AccessTokenAuthorizable {
+    
     /// Refresh token target
     static var refreshToken: Self { get }
 }

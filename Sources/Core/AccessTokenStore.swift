@@ -20,11 +20,14 @@
 
 
 public protocol AccessTokenStore {
+    
     /// Retrive current access token
     func getAccessToken()->AccessTokenType?
+    
     /// Save access token
     /// - Parameter accessToken: Access token to save
     func saveAccessToken(_ accessToken: AccessTokenType) throws
+    
     /// Reset current access token
     func resetAccessToken()
 }

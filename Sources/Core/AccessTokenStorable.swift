@@ -21,8 +21,10 @@
 
 /// Access token store type
 public enum AccessTokenStoreType {
+    
     /// Save the access token
     case save
+    
     /// Reset current access token
     case reset
 }
