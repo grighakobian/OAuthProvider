@@ -18,6 +18,15 @@ it, simply add the following line to your Podfile:
 
 ```ruby
 pod 'OAuthProvider'
+
+# or 
+
+pod 'OAuthProvider/RxSwift'
+
+# or
+
+pod 'OAuthProvider/ReactiveSwift'
+
 ```
 
 ## Author
