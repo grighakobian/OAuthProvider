@@ -13,8 +13,10 @@ To run the example project, clone the repo, and run `pod install` from the Examp
 
 ## Installation
 
+### CocoaPods
+
 OAuthProvider is available through [CocoaPods](https://cocoapods.org). To install
-it, simply add the following line to your Podfile:
+it, use the following entry in your Podfile:
 
 ```ruby
 pod 'OAuthProvider'
@@ -28,6 +30,8 @@ pod 'OAuthProvider/RxSwift'
 pod 'OAuthProvider/ReactiveSwift'
 
 ```
+
+Then run `pod install`.
 
 ## Author
 
