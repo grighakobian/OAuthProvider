@@ -4,11 +4,15 @@
 
 osx_image: xcode12.4
 language: swift
+xcode_workspace: Example/OAuthProvider.xcworkspace
+xcode_scheme: OAuthProvider-Example
+xcode_destination: platform=iOS Simulator,OS=14.3,name=iPhone 12
 cache: cocoapods
 podfile: Example/Podfile
+
 before_install:
  - gem install cocoapods
  - pod install --project-directory=Example
 script:
-- set -o pipefail && xcodebuild test -enableCodeCoverage YES -workspace Example/OAuthProvider.xcworkspace -scheme OAuthProvider-Example -sdk iphonesimulator14.3 ONLY_ACTIVE_ARCH=NO | xcpretty
+- xcodebuild test -workspace 'Example/OAuthProvider.xcworkspace' -scheme 'OAuthProvider-Example' -destination 'platform=iOS Simulator,OS=14.3,name=iPhone 12'
 - pod lib lint
