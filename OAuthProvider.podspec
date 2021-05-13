@@ -20,7 +20,7 @@ Pod::Spec.new do |s|
   s.watchos.deployment_target = '3.0'
   
   s.subspec "Core" do |ss|
-    ss.source_files  = "Sources/Core/"
+    ss.source_files  = "Sources/Core/", "Sources/Core/Extensions/"
     s.dependency 'Moya', '~> 14.0'
     ss.framework  = "Foundation"
   end
