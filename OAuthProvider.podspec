@@ -22,4 +22,10 @@ Pod::Spec.new do |s|
     ss.framework  = "Foundation"
   end
   
+  s.subspec "RxSwift" do |ss|
+    ss.source_files = "Sources/Rx/"
+    ss.dependency "Moya/Core"
+    ss.dependency "RxSwift", "~> 5.0"
+  end
+  
 end
