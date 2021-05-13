@@ -1,0 +1,32 @@
+PODS:
+  - Alamofire (5.4.3)
+  - Moya (14.0.0):
+    - Moya/Core (= 14.0.0)
+  - Moya/Core (14.0.0):
+    - Alamofire (~> 5.0)
+  - OAuthProvider (0.1.0):
+    - Moya (~> 14.0)
+    - OAuthProvider/Core (= 0.1.0)
+  - OAuthProvider/Core (0.1.0):
+    - Moya (~> 14.0)
+
+DEPENDENCIES:
+  - OAuthProvider (from `../`)
+
+SPEC REPOS:
+  trunk:
+    - Alamofire
+    - Moya
+
+EXTERNAL SOURCES:
+  OAuthProvider:
+    :path: "../"
+
+SPEC CHECKSUMS:
+  Alamofire: e447a2774a40c996748296fa2c55112fdbbc42f9
+  Moya: 5b45dacb75adb009f97fde91c204c1e565d31916
+  OAuthProvider: 7f29489eaa87bc9873f4287706735926d534db8f
+
+PODFILE CHECKSUM: 4fe987963048298d47fc30f281125cdf2873b1da
+
+COCOAPODS: 1.10.1

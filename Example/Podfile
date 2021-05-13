@@ -1,0 +1,13 @@
+use_frameworks!
+
+platform :ios, '10.0'
+
+target 'OAuthProvider_Example' do
+  pod 'OAuthProvider', :path => '../'
+
+  target 'OAuthProvider_Tests' do
+    inherit! :search_paths
+
+    
+  end
+end

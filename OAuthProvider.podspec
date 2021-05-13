@@ -1,11 +1,7 @@
 Pod::Spec.new do |s|
   s.name             = 'OAuthProvider'
   s.version          = '0.1.1'
-  s.summary          = 'A short description of OAuthProvider.'
-
-  s.description      = <<-DESC
- TODO: Add long description of the pod here.
-                        DESC
+  s.summary          = 'An elegant OAuth 2.0 library for iOS written in Swift.'
   s.homepage         = 'https://github.com/grighakobian/OAuthProvider'
   s.license          = { :type => 'MIT', :file => 'LICENSE' }
   s.author           = { 'Grigor Hakobyan' => 'grighakobian@gmail.com' }
@@ -15,9 +11,9 @@ Pod::Spec.new do |s|
   s.swift_version = '5.0'
   s.cocoapods_version = '>= 1.4.0'
   s.ios.deployment_target = '10.0'
-  s.osx.deployment_target = '10.12'
-  s.tvos.deployment_target = '10.0'
-  s.watchos.deployment_target = '3.0'
+#  s.osx.deployment_target = '10.12'
+#  s.tvos.deployment_target = '10.0'
+#  s.watchos.deployment_target = '3.0'
   
   s.subspec "Core" do |ss|
     ss.source_files  = "Sources/Core/", "Sources/Core/Extensions/"
