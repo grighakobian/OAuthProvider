@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name             = 'OAuthProvider'
-  s.version          = '0.1.0'
+  s.version          = '0.1.1'
   s.summary          = 'A short description of OAuthProvider.'
 
   s.description      = <<-DESC
@@ -14,10 +14,13 @@ Pod::Spec.new do |s|
   s.default_subspec = "Core"
   s.swift_version = '5.0'
   s.cocoapods_version = '>= 1.4.0'
-  s.ios.deployment_target = '12.0'
+  s.ios.deployment_target = '10.0'
+  s.osx.deployment_target = '10.12'
+  s.tvos.deployment_target = '10.0'
+  s.watchos.deployment_target = '3.0'
   
   s.subspec "Core" do |ss|
-    ss.source_files  = "Sources/Core/"
+    ss.source_files  = "Sources/Core/", "Sources/Core/Extensions/"
     s.dependency 'Moya', '~> 14.0'
     ss.framework  = "Foundation"
   end
