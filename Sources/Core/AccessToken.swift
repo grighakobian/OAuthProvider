@@ -37,7 +37,9 @@ public protocol AccessTokenType: Codable {
     ///     Authorization: Bearer mF_9.B5f-4.1JqM
     var tokenType: String? { get }
     
-    /// If the access token will expire, then it is useful to return a refresh token which applications can use to obtain another access token. However, tokens issued with the implicit grant cannot be issued a refresh token.
+    /// If the access token will expire, then it is useful to return a refresh token
+    /// which applications can use to obtain another access token.
+    /// However, tokens issued with the implicit grant cannot be issued a refresh token.
     var refreshToken: String? { get }
     
     /// The lifetime in seconds of the access token. For
@@ -47,7 +49,9 @@ public protocol AccessTokenType: Codable {
     /// expiration time via other means or document the default value.
     var expiresIn: Double? { get }
     
-    /// If the scope the user granted is identical to the scope the app requested, this parameter is optional. If the granted scope is different from the requested scope, such as if the user modified the scope, then this parameter is required.
+    /// If the scope the user granted is identical to the scope the app requested,
+    /// this parameter is optional. If the granted scope is different from the requested scope,
+    /// such as if the user modified the scope, then this parameter is required.
     var scope: String? { get }
 }
 
