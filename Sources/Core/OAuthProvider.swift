@@ -24,7 +24,7 @@ import Alamofire
 import class UIKit.UIApplication
 #endif
 
-public protocol OAuthProviderType: class {
+public protocol OAuthProviderType: AnyObject {
     associatedtype Target: OAuthTargetType
     
     /// Returns wheter the network provider suspended
@@ -274,7 +274,7 @@ extension OAuthProvider: OAuthProviderType {
         // Cancel pending requests
         cancelPendingRequests()
         // Notify authentication challenge failed
-        notify(.didFailAuthenticationChallenge)
+        notify(.didFailAuthenticationChallenge, object: error)
     }
     
     /// Creates a notification with a given name and sender and posts it to the notification center.
