@@ -17,21 +17,21 @@ Pod::Spec.new do |s|
   
   s.subspec "Core" do |ss|
     ss.source_files  = "Sources/Core/", "Sources/Core/Extensions/"
-    ss.dependency 'Moya/Core', '~> 14.0'
+    ss.dependency 'Moya', '~> 14.0'
     ss.framework  = "Foundation"
   end
   
   s.subspec "RxSwift" do |ss|
     ss.source_files = "Sources/Rx/"
     ss.dependency "OAuthProvider/Core"
-    ss.dependency 'Moya/RxSwift', '~> 14.0'
+    ss.dependency 'Moya/RxSwift'
     ss.dependency "RxSwift", "~> 5.0"
   end
   
   s.subspec "ReactiveSwift" do |ss|
     ss.source_files = "Sources/Reactive/"
     ss.dependency "OAuthProvider/Core"
-    ss.dependency 'Moya/ReactiveSwift', '~> 14.0'
+    ss.dependency 'Moya/ReactiveSwift'
     ss.dependency "ReactiveSwift", "~> 6.0"
   end
   
