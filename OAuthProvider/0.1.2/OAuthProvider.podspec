@@ -10,7 +10,7 @@ Pod::Spec.new do |s|
   s.default_subspec = "Core"
   s.swift_version = '5.0'
   s.cocoapods_version = '>= 1.4.0'
-  s.ios.deployment_target = '10.0'
+  s.ios.deployment_target = '12.0'
 #  s.osx.deployment_target = '10.12'
 #  s.tvos.deployment_target = '10.0'
 #  s.watchos.deployment_target = '3.0'
