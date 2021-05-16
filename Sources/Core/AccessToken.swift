@@ -47,7 +47,7 @@ public protocol AccessTokenType: Codable {
     /// expire in one hour from the time the response was generated.
     /// If omitted, the authorization server SHOULD provide the
     /// expiration time via other means or document the default value.
-    var expiresIn: Double? { get }
+    var expiresIn: TimeInterval? { get }
     
     /// If the scope the user granted is identical to the scope the app requested,
     /// this parameter is optional. If the granted scope is different from the requested scope,
@@ -62,7 +62,7 @@ public struct AccessToken: AccessTokenType {
     public let accessToken: String
     public let tokenType: String?
     public let refreshToken: String?
-    public let expiresIn: Double?
+    public let expiresIn: TimeInterval?
     public let scope: String?
     
     enum CodingKeys: String, CodingKey {
