@@ -24,7 +24,7 @@ import Alamofire
 import class UIKit.UIApplication
 #endif
 
-public protocol OAuthProviderType: class {
+public protocol OAuthProviderType: AnyObject {
     associatedtype Target: OAuthTargetType
     
     /// Returns wheter the network provider suspended
