@@ -10,26 +10,28 @@ Pod::Spec.new do |s|
   s.default_subspec = "Core"
   s.swift_version = '5.0'
   s.cocoapods_version = '>= 1.4.0'
-  s.ios.deployment_target = '10.0'
+  s.ios.deployment_target = '12.0'
 #  s.osx.deployment_target = '10.12'
 #  s.tvos.deployment_target = '10.0'
 #  s.watchos.deployment_target = '3.0'
   
   s.subspec "Core" do |ss|
     ss.source_files  = "Sources/Core/", "Sources/Core/Extensions/"
-    s.dependency 'Moya', '~> 14.0'
+    ss.dependency 'Moya/Core', '~> 14.0'
     ss.framework  = "Foundation"
   end
   
   s.subspec "RxSwift" do |ss|
     ss.source_files = "Sources/Rx/"
     ss.dependency "OAuthProvider/Core"
+    ss.dependency 'Moya/RxSwift', '~> 14.0'
     ss.dependency "RxSwift", "~> 5.0"
   end
   
   s.subspec "ReactiveSwift" do |ss|
     ss.source_files = "Sources/Reactive/"
     ss.dependency "OAuthProvider/Core"
+    ss.dependency 'Moya/ReactiveSwift', '~> 14.0'
     ss.dependency "ReactiveSwift", "~> 6.0"
   end
   
