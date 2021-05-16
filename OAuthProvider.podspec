@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name             = 'OAuthProvider'
-  s.version          = '0.1.1'
+  s.version          = '0.1.2'
   s.summary          = 'An elegant OAuth 2.0 library for iOS written in Swift.'
   s.homepage         = 'https://github.com/grighakobian/OAuthProvider'
   s.license          = { :type => 'MIT', :file => 'LICENSE' }
