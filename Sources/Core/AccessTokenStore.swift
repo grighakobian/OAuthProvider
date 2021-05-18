@@ -22,11 +22,11 @@
 public protocol AccessTokenStore {
     
     /// Retrive current access token
-    func getAccessToken()->AccessTokenType?
+    func getAccessToken()->AccessToken?
     
     /// Save access token
     /// - Parameter accessToken: Access token to save
-    func saveAccessToken(_ accessToken: AccessTokenType) throws
+    func saveAccessToken(_ accessToken: AccessToken) throws
     
     /// Reset current access token
     func resetAccessToken()
