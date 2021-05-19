@@ -169,7 +169,8 @@ extension OAuthProvider: OAuthProviderType {
                 /// which a needs valid access token
                 if (accessTokenStore.getAccessToken() == nil) {
                     cancelPendingRequests()
-                    completion(.failure(MoyaError.underlying(NSError(), nil)))
+                    let error = OAuthError.unauthorizedClient
+                    completion(.failure(MoyaError.underlying(error, nil)))
                     return EmptyCancellable(isCancelled: true)
                 }
                 
