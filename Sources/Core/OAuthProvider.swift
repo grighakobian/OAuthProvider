@@ -159,7 +159,14 @@ extension OAuthProvider: OAuthProviderType {
         
         switch target.authorizationType {
         case .none:
-            return requestNormal(target, callbackQueue: callbackQueue, progress: progress, completion: completion)
+            return requestNormal(target, callbackQueue: callbackQueue, progress: progress) { (result) in
+                switch result {
+                case .success(let response):
+                    self.handleSuccessResponse(response, for: target, completion: completion)
+                case .failure:
+                    return completion(result)
+                }
+            }
         default:
             switch state {
             case .unauthorized:
