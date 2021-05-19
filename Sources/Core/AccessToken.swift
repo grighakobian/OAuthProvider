@@ -65,6 +65,20 @@ public struct AccessToken: AccessTokenType {
     public let expiresIn: TimeInterval?
     public let scope: String?
     
+    public init(
+        accessToken: String,
+        tokenType: String?,
+        refreshToken: String?,
+        expiresIn: TimeInterval?,
+        scope: String?) {
+        
+        self.accessToken = accessToken
+        self.tokenType = tokenType
+        self.refreshToken = refreshToken
+        self.expiresIn = expiresIn
+        self.scope = scope
+    }
+    
     enum CodingKeys: String, CodingKey {
         case accessToken = "access_token"
         case tokenType = "token_type"
