@@ -18,21 +18,23 @@
 //    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 //    THE SOFTWARE.
 
-import Moya
 
-extension MoyaError {
-    
-    func isUnauthrized(for target: OAuthTargetType)->Bool {
+/// Represents the OAuth status codes validation
+public enum OAuthValidationType {
+
+    /// Validate OAuth unauthorized code (only 401).
+    case basic
+
+    /// Validate only the given status codes.
+    case customCodes([Int])
+
+    /// The list of HTTP status codes to validate.
+    var statusCodes: [Int] {
         switch self {
-        case .underlying(let error, _):
-            if let statusCode = error.asAFError?.responseCode {
-                let statusCodes = target.oauthValidationType.statusCodes
-                return statusCodes.contains(statusCode)
-            }
-            return false
-        default:
-            return false
+        case .basic:
+            return Array([401])
+        case .customCodes(let codes):
+            return codes
         }
     }
 }
-

@@ -25,4 +25,16 @@ public protocol OAuthTargetType: TargetType, AccessTokenStorable, AccessTokenAut
     
     /// Refresh token target
     static var refreshToken: Self { get }
+    
+    /// The type of OAuth validation to perform on the request. Default is `.basic`.
+    var oauthValidationType: OAuthValidationType { get }
+}
+
+
+public extension OAuthTargetType {
+    
+    /// The type of OAuth validation to perform on the request. Default is `.basic`.
+    var oauthValidationType: OAuthValidationType {
+        return .basic
+    }
 }

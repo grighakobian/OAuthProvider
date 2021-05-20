@@ -186,8 +186,7 @@ extension OAuthProvider: OAuthProviderType {
                     case .success(let response):
                         self.handleSuccessResponse(response, for: target, completion: completion)
                     case .failure(let moyaError):
-                        
-                        guard moyaError.isUnauthorized else {
+                        guard moyaError.isUnauthrized(for: target) else {
                             return completion(.failure(moyaError))
                         }
                         
