@@ -22,6 +22,9 @@
 /// Represents the OAuth status codes validation
 public enum OAuthValidationType {
 
+    /// No validation.
+    case none
+    
     /// Validate OAuth unauthorized code (only 401).
     case basic
 
@@ -31,8 +34,10 @@ public enum OAuthValidationType {
     /// The list of HTTP status codes to validate.
     var statusCodes: [Int] {
         switch self {
+        case .none:
+            return []
         case .basic:
-            return Array([401])
+            return [401]
         case .customCodes(let codes):
             return codes
         }

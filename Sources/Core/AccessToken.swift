@@ -19,10 +19,10 @@
 //    THE SOFTWARE.
 
 
-public protocol AccessTokenType: Codable {
+public struct AccessToken: Codable {
     
     /// The access token issued by the authorization server.
-    var accessToken: String { get }
+    public let accessToken: String
     
     /// The access token type provides the client with the information
     /// required to successfully utilize the access token to make a protected
@@ -35,34 +35,23 @@ public protocol AccessTokenType: Codable {
     ///     GET /resource/1 HTTP/1.1
     ///     Host: example.com
     ///     Authorization: Bearer mF_9.B5f-4.1JqM
-    var tokenType: String? { get }
+    public let tokenType: String?
     
     /// If the access token will expire, then it is useful to return a refresh token
     /// which applications can use to obtain another access token.
     /// However, tokens issued with the implicit grant cannot be issued a refresh token.
-    var refreshToken: String? { get }
+    public let refreshToken: String?
     
     /// The lifetime in seconds of the access token. For
     /// example, the value "3600" denotes that the access token will
     /// expire in one hour from the time the response was generated.
     /// If omitted, the authorization server SHOULD provide the
     /// expiration time via other means or document the default value.
-    var expiresIn: TimeInterval? { get }
+    public let expiresIn: TimeInterval?
     
     /// If the scope the user granted is identical to the scope the app requested,
     /// this parameter is optional. If the granted scope is different from the requested scope,
     /// such as if the user modified the scope, then this parameter is required.
-    var scope: String? { get }
-}
-
-
-// MARK: - AccessToken
-
-public struct AccessToken: AccessTokenType {
-    public let accessToken: String
-    public let tokenType: String?
-    public let refreshToken: String?
-    public let expiresIn: TimeInterval?
     public let scope: String?
     
     public init(
