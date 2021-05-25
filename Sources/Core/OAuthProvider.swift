@@ -269,8 +269,10 @@ extension OAuthProvider: OAuthProviderType {
                     self.setRefreshTokenFailed(with: error)
                     completion(.failure(MoyaError.underlying(error, response)))
                 }
-            case .failure(let error):
-                self.setRefreshTokenFailed(with: error)
+            case .failure(let moyaError):
+                if moyaError.isUnauthrized(for: refreshTokenTarget)  {
+                    self.setRefreshTokenFailed(with: moyaError)
+                }
             }
         }
     }
