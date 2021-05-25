@@ -20,7 +20,7 @@
 
 import Foundation
 
-extension Notification.Name {
+public extension Notification.Name {
     
     static let didRecieveAuthenticationChallenge = Notification.Name("didRecieveAuthenticationChallenge")
     
