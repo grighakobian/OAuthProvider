@@ -21,20 +21,5 @@
 import Moya
 
 /// The protocol used to define the specifications necessary for a `OAuthProvider`.
-public protocol OAuthTargetType: TargetType, AccessTokenStorable, AccessTokenAuthorizable {
-    
-    /// Refresh token target
-    static var refreshToken: Self { get }
-    
-    /// The type of OAuth validation to perform on the request. Default is `.basic`.
-    var oauthValidationType: OAuthValidationType { get }
-}
-
-
-public extension OAuthTargetType {
-    
-    /// The type of OAuth validation to perform on the request. Default is `.basic`.
-    var oauthValidationType: OAuthValidationType {
-        return .basic
-    }
+public protocol OAuthTargetType: TargetType, OAuthValidatable, AccessTokenStorable, AccessTokenAuthorizable {
 }

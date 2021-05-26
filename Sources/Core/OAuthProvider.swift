@@ -45,6 +45,8 @@ public protocol OAuthProviderType: AnyObject {
 
 open class OAuthProvider<Target: OAuthTargetType> {
     
+    /// Closure that provides the refresh token target for the provider.
+    public typealias RefreshTokenClosure = ()->Target
     
     /// Thread safe lock
     public let lock: NSRecursiveLock
@@ -61,6 +63,9 @@ open class OAuthProvider<Target: OAuthTargetType> {
     /// The access token store
     public let accessTokenStore: AccessTokenStore
     
+    /// A closure that provides the refresh token target for the provider
+    public let refreshTokenClosure: RefreshTokenClosure
+    
     /// Continue request in background
     public var continueRequestsInBackground: Bool
         
@@ -68,12 +73,16 @@ open class OAuthProvider<Target: OAuthTargetType> {
     /// - Parameters:
     ///   - provider: The moya provider
     ///   - accessTokenStore: The access token store
+    ///   - refreshTokenClosure: The refresh toke closure
+    ///   - continueRequestsInBackground: Continue requests in background: default`true`
     public init(provider: MoyaProvider<Target>,
                 accessTokenStore: AccessTokenStore,
+                refreshTokenClosure: @escaping RefreshTokenClosure,
                 continueRequestsInBackground: Bool = true) {
         
         self.provider = provider
         self.accessTokenStore = accessTokenStore
+        self.refreshTokenClosure = refreshTokenClosure
         self.continueRequestsInBackground = continueRequestsInBackground
         self.lock = NSRecursiveLock()
         self.authenticationState = .authorized
@@ -250,7 +259,7 @@ extension OAuthProvider: OAuthProviderType {
         self.notify(.didStartAuthenticationChallenge)
         // Perform token refresh request
         
-        let refreshTokenTarget = Target.refreshToken
+        let refreshTokenTarget = refreshTokenClosure()
         requestNormal(refreshTokenTarget) { (result) in
             switch result {
             case .success(let response):
