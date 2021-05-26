@@ -20,49 +20,41 @@
 
 import Moya
 
-public protocol OperationType: Cancellable {
-    func resume()
-}
+/// Conform Operation to Cancellable
+extension Operation: Cancellable {}
 
-public class Operation: OperationType {
+
+/// Cancellable operation
+final class CancellableOperation: Operation {
     
-    private var _isCancelled: Bool = false
-    private var innerCancellable: Cancellable?
-    
-    let operation: ()->Cancellable
+    private let innerOperation: ()->Cancellable
+    private(set) var innerCancellable: Cancellable?
     
     init(_ operation: @escaping ()->Cancellable) {
-        self.operation = operation
+        self.innerOperation = operation
+        super.init()
     }
     
-    public func resume() {
-        if _isCancelled {
+    override func main() {
+        if isCancelled {
+            innerCancellable?.cancel()
             return
         }
-        innerCancellable = operation()
+        innerCancellable = innerOperation()
+        super.main()
     }
     
-    // MARK: Cancellable
-    
-    public var isCancelled: Bool {
-        return _isCancelled
+    override func start() {
+        if isCancelled {
+            innerCancellable?.cancel()
+            return
+        }
+        innerCancellable = innerOperation()
+        super.start()
     }
     
-    public func cancel() {
-        _isCancelled = true
+    override func cancel() {
         innerCancellable?.cancel()
-    }
-}
-
-
-class EmptyCancellable: Cancellable {
-    var isCancelled: Bool
-    
-    init(isCancelled: Bool) {
-        self.isCancelled = isCancelled
-    }
-    
-    func cancel() {
-        isCancelled = true
+        super.cancel()
     }
 }
