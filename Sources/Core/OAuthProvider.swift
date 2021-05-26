@@ -27,13 +27,16 @@ import class UIKit.UIApplication
 public protocol OAuthProviderType: AnyObject {
     associatedtype Target: OAuthTargetType
     
-    /// Returns wheter the network provider suspended
-    var isSuspended: Bool { get }
-    /// Suspend network provider to queue new requests
+    /// Returns wheter the OAuth provider authenticated
+    var authenticationState: AuthenticationState { get }
+    
+    /// Suspend OAuth provider to queue new requests
     func suspend()
-    /// Resume network provider to start runing pending requests
+    
+    /// Resume OAuth provider to start runing pending requests
     func resume()
-    /// Cancel all pending queued requests
+    
+    /// Cancel all pending requests
     func cancelPendingRequests()
     
     /// Designated request-making method. Returns a `Cancellable` token to cancel the request later.
@@ -42,28 +45,20 @@ public protocol OAuthProviderType: AnyObject {
 
 open class OAuthProvider<Target: OAuthTargetType> {
     
-    /// Network provider state
-    ///
-    /// - unauthorized: Unathorized state
-    /// - `default`: Default state
-    public enum State {
-        case unauthorized
-        case `default`
-    }
     
     /// Thread safe lock
     public let lock: NSRecursiveLock
     
-    /// The network provider state
-    public var state: State
+    /// The OAuth provider state
+    public var authenticationState: AuthenticationState
     
     /// The pending request queue
     public var operationQueue: [Operation]
     
-    /// The moya provider for iris API
+    /// The moya provider
     public let provider: MoyaProvider<Target>
     
-    /// The user credentials store used to check access token is valid or not
+    /// The access token store
     public let accessTokenStore: AccessTokenStore
     
     /// Continue request in background
@@ -81,26 +76,26 @@ open class OAuthProvider<Target: OAuthTargetType> {
         self.accessTokenStore = accessTokenStore
         self.continueRequestsInBackground = continueRequestsInBackground
         self.lock = NSRecursiveLock()
-        self.state = .default
+        self.authenticationState = .authorized
         self.operationQueue = [Operation]()
     }
     
-    open var isSuspended: Bool {
+    open var isAuthenticated: Bool {
         lock.lock(); defer { lock.unlock() }
-        return (state == .unauthorized)
+        return (authenticationState == .unauthorized)
     }
     
     /// Set network provider state `suspended`
     open func suspend() {
         lock.lock()
-        state = .unauthorized
+        authenticationState = .unauthorized
         lock.unlock()
     }
     
     /// Resume network provider queued requests
     open func resume() {
         lock.lock()
-        state = .default
+        authenticationState = .authorized
         while !operationQueue.isEmpty {
             operationQueue.removeFirst().resume()
         }
@@ -111,7 +106,7 @@ open class OAuthProvider<Target: OAuthTargetType> {
     open func cancelPendingRequests() {
         lock.lock()
         operationQueue.removeAll()
-        state = .default
+        authenticationState = .authorized
         lock.unlock()
     }
 }
@@ -119,7 +114,7 @@ open class OAuthProvider<Target: OAuthTargetType> {
 // MARK: - NetworkProviderType
 
 extension OAuthProvider: OAuthProviderType {
-    
+ 
     @discardableResult
     func requestNormal(_ target: Target,
                        callbackQueue: DispatchQueue? = .none,
@@ -168,7 +163,7 @@ extension OAuthProvider: OAuthProviderType {
                 }
             }
         default:
-            switch state {
+            switch authenticationState {
             case .unauthorized:
                 return queueRequest(target, callbackQueue: callbackQueue, progress: progress, completion: completion)
             default:
@@ -243,7 +238,7 @@ extension OAuthProvider: OAuthProviderType {
         lock.lock(); defer { lock.unlock() }
         
         // Check wheter network provider is already suspended to avoid suspending again
-        guard self.isSuspended == false else {
+        guard self.isAuthenticated == false else {
             return
         }
         
