@@ -51,11 +51,11 @@ open class OAuthProvider<Target: OAuthTargetType> {
     /// Thread safe lock
     public let lock: NSRecursiveLock
     
-    /// The OAuth provider state
+    /// The  provider authentication state
     public var authenticationState: AuthenticationState
     
-    /// The pending request queue
-    public var operationQueue: [Operation]
+    /// The operation queue responsible for pending requests execution
+    public let operationQueue: OperationQueue
     
     /// The moya provider
     public let provider: MoyaProvider<Target>
@@ -86,18 +86,22 @@ open class OAuthProvider<Target: OAuthTargetType> {
         self.continueRequestsInBackground = continueRequestsInBackground
         self.lock = NSRecursiveLock()
         self.authenticationState = .authorized
-        self.operationQueue = [Operation]()
+        
+        self.operationQueue = OperationQueue()
+        self.operationQueue.underlyingQueue = DispatchQueue.global(qos: .userInteractive)
+        self.operationQueue.isSuspended = true
     }
     
     open var isAuthenticated: Bool {
         lock.lock(); defer { lock.unlock() }
-        return (authenticationState == .unauthorized)
+        return (authenticationState.isAuthorized)
     }
     
     /// Set network provider state `suspended`
     open func suspend() {
         lock.lock()
         authenticationState = .unauthorized
+        operationQueue.isSuspended = true
         lock.unlock()
     }
     
@@ -105,17 +109,15 @@ open class OAuthProvider<Target: OAuthTargetType> {
     open func resume() {
         lock.lock()
         authenticationState = .authorized
-        while !operationQueue.isEmpty {
-            operationQueue.removeFirst().resume()
-        }
+        operationQueue.isSuspended = false
         lock.unlock()
     }
     
     /// Cancel all queued requests
     open func cancelPendingRequests() {
         lock.lock()
-        operationQueue.removeAll()
         authenticationState = .authorized
+        operationQueue.cancelAllOperations()
         lock.unlock()
     }
 }
@@ -182,7 +184,7 @@ extension OAuthProvider: OAuthProviderType {
                     cancelPendingRequests()
                     let error = OAuthError.unauthorizedClient
                     completion(.failure(MoyaError.underlying(error, nil)))
-                    return EmptyCancellable(isCancelled: true)
+                    return Operation()
                 }
                 
                 return requestNormal(target, callbackQueue: callbackQueue, progress: progress) { (result) in
@@ -234,12 +236,10 @@ extension OAuthProvider: OAuthProviderType {
     
         lock.lock(); defer { lock.unlock() }
         
-        let cancellableOperation = Operation { [unowned self] () -> Cancellable in
+        let cancellableOperation = CancellableOperation { [unowned self] () -> Cancellable in
             return self.requestNormal(target, callbackQueue: callbackQueue, progress: progress, completion: completion)
         }
-        
-        operationQueue.append(cancellableOperation)
-        
+        operationQueue.addOperation(cancellableOperation)
         return cancellableOperation
     }
     
