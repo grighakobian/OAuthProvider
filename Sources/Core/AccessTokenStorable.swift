@@ -22,6 +22,9 @@
 /// Access token store type
 public enum AccessTokenStoreType {
     
+    /// Do nothing
+    case none
+    
     /// Save the access token
     case save
     
@@ -33,5 +36,5 @@ public enum AccessTokenStoreType {
 public protocol AccessTokenStorable {
     
     /// The access token store type for target
-    var accessTokenStoreType: AccessTokenStoreType? { get }
+    var accessTokenStoreType: AccessTokenStoreType { get }
 }
