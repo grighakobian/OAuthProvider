@@ -43,3 +43,18 @@ public enum OAuthValidationType {
         }
     }
 }
+
+public protocol OAuthValidatable {
+    
+    /// The type of OAuth validation to perform on the request. Default is `.basic`.
+    var oauthValidationType: OAuthValidationType { get }
+}
+
+
+public extension OAuthValidatable {
+    
+    /// The type of OAuth validation to perform on the request. Default is `.basic`.
+    var oauthValidationType: OAuthValidationType {
+        return .basic
+    }
+}

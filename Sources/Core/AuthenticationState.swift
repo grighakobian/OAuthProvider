@@ -18,51 +18,21 @@
 //    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 //    THE SOFTWARE.
 
-import Moya
 
-public protocol OperationType: Cancellable {
-    func resume()
-}
+/// OAuth provider authentication state
+public enum AuthenticationState {
+    
+    /// Authentication state `.unknown`
+    case unknown
 
-public class Operation: OperationType {
-    
-    private var _isCancelled: Bool = false
-    private var innerCancellable: Cancellable?
-    
-    let operation: ()->Cancellable
-    
-    init(_ operation: @escaping ()->Cancellable) {
-        self.operation = operation
-    }
-    
-    public func resume() {
-        if _isCancelled {
-            return
-        }
-        innerCancellable = operation()
-    }
-    
-    // MARK: Cancellable
-    
-    public var isCancelled: Bool {
-        return _isCancelled
-    }
-    
-    public func cancel() {
-        _isCancelled = true
-        innerCancellable?.cancel()
-    }
-}
+    /// Authentication state `.authorized`
+    case authorized
 
-
-class EmptyCancellable: Cancellable {
-    var isCancelled: Bool
-    
-    init(isCancelled: Bool) {
-        self.isCancelled = isCancelled
-    }
-    
-    func cancel() {
-        isCancelled = true
+    /// Authentication state `.unauthorized`
+    case unauthorized
+     
+    /// Returns wheter authentication state is `.authorized`
+    public var isAuthorized: Bool {
+        return self == .authorized
     }
 }

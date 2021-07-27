@@ -27,13 +27,16 @@ import class UIKit.UIApplication
 public protocol OAuthProviderType: AnyObject {
     associatedtype Target: OAuthTargetType
     
-    /// Returns wheter the network provider suspended
-    var isSuspended: Bool { get }
-    /// Suspend network provider to queue new requests
+    /// Returns wheter the OAuth provider authenticated
+    var authenticationState: AuthenticationState { get }
+    
+    /// Suspend OAuth provider to queue new requests
     func suspend()
-    /// Resume network provider to start runing pending requests
+    
+    /// Resume OAuth provider to start runing pending requests
     func resume()
-    /// Cancel all pending queued requests
+    
+    /// Cancel all pending requests
     func cancelPendingRequests()
     
     /// Designated request-making method. Returns a `Cancellable` token to cancel the request later.
@@ -42,29 +45,26 @@ public protocol OAuthProviderType: AnyObject {
 
 open class OAuthProvider<Target: OAuthTargetType> {
     
-    /// Network provider state
-    ///
-    /// - unauthorized: Unathorized state
-    /// - `default`: Default state
-    public enum State {
-        case unauthorized
-        case `default`
-    }
+    /// Closure that provides the refresh token target for the provider.
+    public typealias RefreshTokenClosure = ()->Target
     
     /// Thread safe lock
     public let lock: NSRecursiveLock
     
-    /// The network provider state
-    public var state: State
+    /// The  provider authentication state
+    public var authenticationState: AuthenticationState
     
-    /// The pending request queue
-    public var operationQueue: [Operation]
+    /// The operation queue responsible for pending requests execution
+    public let operationQueue: OperationQueue
     
-    /// The moya provider for iris API
+    /// The moya provider
     public let provider: MoyaProvider<Target>
     
-    /// The user credentials store used to check access token is valid or not
+    /// The access token store
     public let accessTokenStore: AccessTokenStore
+    
+    /// A closure that provides the refresh token target for the provider
+    public let refreshTokenClosure: RefreshTokenClosure
     
     /// Continue request in background
     public var continueRequestsInBackground: Bool
@@ -73,45 +73,51 @@ open class OAuthProvider<Target: OAuthTargetType> {
     /// - Parameters:
     ///   - provider: The moya provider
     ///   - accessTokenStore: The access token store
+    ///   - refreshTokenClosure: The refresh toke closure
+    ///   - continueRequestsInBackground: Continue requests in background: default`true`
     public init(provider: MoyaProvider<Target>,
                 accessTokenStore: AccessTokenStore,
+                refreshTokenClosure: @escaping RefreshTokenClosure,
                 continueRequestsInBackground: Bool = true) {
         
         self.provider = provider
         self.accessTokenStore = accessTokenStore
+        self.refreshTokenClosure = refreshTokenClosure
         self.continueRequestsInBackground = continueRequestsInBackground
         self.lock = NSRecursiveLock()
-        self.state = .default
-        self.operationQueue = [Operation]()
+        self.authenticationState = .authorized
+        
+        self.operationQueue = OperationQueue()
+        self.operationQueue.underlyingQueue = DispatchQueue.global(qos: .userInteractive)
+        self.operationQueue.isSuspended = true
     }
     
-    open var isSuspended: Bool {
+    open var isAuthenticated: Bool {
         lock.lock(); defer { lock.unlock() }
-        return (state == .unauthorized)
+        return (authenticationState.isAuthorized)
     }
     
     /// Set network provider state `suspended`
     open func suspend() {
         lock.lock()
-        state = .unauthorized
+        authenticationState = .unauthorized
+        operationQueue.isSuspended = true
         lock.unlock()
     }
     
     /// Resume network provider queued requests
     open func resume() {
         lock.lock()
-        state = .default
-        while !operationQueue.isEmpty {
-            operationQueue.removeFirst().resume()
-        }
+        authenticationState = .authorized
+        operationQueue.isSuspended = false
         lock.unlock()
     }
     
     /// Cancel all queued requests
     open func cancelPendingRequests() {
         lock.lock()
-        operationQueue.removeAll()
-        state = .default
+        authenticationState = .authorized
+        operationQueue.cancelAllOperations()
         lock.unlock()
     }
 }
@@ -119,7 +125,7 @@ open class OAuthProvider<Target: OAuthTargetType> {
 // MARK: - NetworkProviderType
 
 extension OAuthProvider: OAuthProviderType {
-    
+ 
     @discardableResult
     func requestNormal(_ target: Target,
                        callbackQueue: DispatchQueue? = .none,
@@ -152,9 +158,9 @@ extension OAuthProvider: OAuthProviderType {
     
     
     @discardableResult
-    public func request(_ target: Target,
-                        callbackQueue: DispatchQueue?,
-                        progress: ProgressBlock?,
+    open func request(_ target: Target,
+                        callbackQueue: DispatchQueue? = .none,
+                        progress: ProgressBlock? = .none,
                         completion: @escaping Completion) -> Cancellable {
         
         switch target.authorizationType {
@@ -168,7 +174,7 @@ extension OAuthProvider: OAuthProviderType {
                 }
             }
         default:
-            switch state {
+            switch authenticationState {
             case .unauthorized:
                 return queueRequest(target, callbackQueue: callbackQueue, progress: progress, completion: completion)
             default:
@@ -178,7 +184,7 @@ extension OAuthProvider: OAuthProviderType {
                     cancelPendingRequests()
                     let error = OAuthError.unauthorizedClient
                     completion(.failure(MoyaError.underlying(error, nil)))
-                    return EmptyCancellable(isCancelled: true)
+                    return Operation()
                 }
                 
                 return requestNormal(target, callbackQueue: callbackQueue, progress: progress) { (result) in
@@ -195,7 +201,11 @@ extension OAuthProvider: OAuthProviderType {
                         // Check if refresh token is exists
                         let accessToken = self.accessTokenStore.getAccessToken()
                         guard accessToken?.refreshToken != nil else {
-                            return self.setRefreshTokenFailed(with: NSError())
+                            let error = OAuthError.unauthorizedClient
+                            // Reset user credentials
+                            self.accessTokenStore.resetAccessToken()
+                            // Notify authentication challenge failed
+                            return self.notify(.didFailAuthenticationChallenge, object: error)
                         }
                         
                         self.refreshToken(completion: completion)
@@ -230,12 +240,10 @@ extension OAuthProvider: OAuthProviderType {
     
         lock.lock(); defer { lock.unlock() }
         
-        let cancellableOperation = Operation { [unowned self] () -> Cancellable in
+        let cancellableOperation = CancellableOperation { [unowned self] () -> Cancellable in
             return self.requestNormal(target, callbackQueue: callbackQueue, progress: progress, completion: completion)
         }
-        
-        operationQueue.append(cancellableOperation)
-        
+        operationQueue.addOperation(cancellableOperation)
         return cancellableOperation
     }
     
@@ -243,7 +251,7 @@ extension OAuthProvider: OAuthProviderType {
         lock.lock(); defer { lock.unlock() }
         
         // Check wheter network provider is already suspended to avoid suspending again
-        guard self.isSuspended == false else {
+        guard self.isAuthenticated == false else {
             return
         }
         
@@ -255,7 +263,7 @@ extension OAuthProvider: OAuthProviderType {
         self.notify(.didStartAuthenticationChallenge)
         // Perform token refresh request
         
-        let refreshTokenTarget = Target.refreshToken
+        let refreshTokenTarget = refreshTokenClosure()
         requestNormal(refreshTokenTarget) { (result) in
             switch result {
             case .success(let response):

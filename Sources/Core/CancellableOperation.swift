@@ -20,11 +20,41 @@
 
 import Moya
 
-/// The protocol used to define the specifications necessary for a `OAuthProvider`.
-public protocol OAuthTargetType: TargetType,
-                                 OAuthValidatable,
-                                 AccessTokenStorable,
-                                 AccessTokenAuthorizable {
+/// Conform Operation to Cancellable
+extension Operation: Cancellable {}
+
+
+/// Cancellable operation
+final class CancellableOperation: Operation {
     
-    var validationType: ValidationType { get }
+    private let innerOperation: ()->Cancellable
+    private(set) var innerCancellable: Cancellable?
+    
+    init(_ operation: @escaping ()->Cancellable) {
+        self.innerOperation = operation
+        super.init()
+    }
+    
+    override func main() {
+        if isCancelled {
+            innerCancellable?.cancel()
+            return
+        }
+        innerCancellable = innerOperation()
+        super.main()
+    }
+    
+    override func start() {
+        if isCancelled {
+            innerCancellable?.cancel()
+            return
+        }
+        innerCancellable = innerOperation()
+        super.start()
+    }
+    
+    override func cancel() {
+        innerCancellable?.cancel()
+        super.cancel()
+    }
 }
