@@ -201,7 +201,11 @@ extension OAuthProvider: OAuthProviderType {
                         // Check if refresh token is exists
                         let accessToken = self.accessTokenStore.getAccessToken()
                         guard accessToken?.refreshToken != nil else {
-                            return self.setRefreshTokenFailed(with: NSError())
+                            let error = OAuthError.unauthorizedClient
+                            // Reset user credentials
+                            self.accessTokenStore.resetAccessToken()
+                            // Notify authentication challenge failed
+                            return self.notify(.didFailAuthenticationChallenge, object: error)
                         }
                         
                         self.refreshToken(completion: completion)
