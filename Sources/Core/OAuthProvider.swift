@@ -158,9 +158,9 @@ extension OAuthProvider: OAuthProviderType {
     
     
     @discardableResult
-    public func request(_ target: Target,
-                        callbackQueue: DispatchQueue?,
-                        progress: ProgressBlock?,
+    open func request(_ target: Target,
+                        callbackQueue: DispatchQueue? = .none,
+                        progress: ProgressBlock? = .none,
                         completion: @escaping Completion) -> Cancellable {
         
         switch target.authorizationType {
