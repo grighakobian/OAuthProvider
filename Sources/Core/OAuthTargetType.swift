@@ -21,5 +21,10 @@
 import Moya
 
 /// The protocol used to define the specifications necessary for a `OAuthProvider`.
-public protocol OAuthTargetType: TargetType, OAuthValidatable, AccessTokenStorable, AccessTokenAuthorizable {
+public protocol OAuthTargetType: TargetType,
+                                 OAuthValidatable,
+                                 AccessTokenStorable,
+                                 AccessTokenAuthorizable {
+    
+    var validationType: ValidationType { get }
 }
