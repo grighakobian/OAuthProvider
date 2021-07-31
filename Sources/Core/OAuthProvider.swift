@@ -31,7 +31,7 @@ public protocol OAuthProviderType: AnyObject {
 open class OAuthProvider<Target: OAuthTargetType> {
     
     /// Closure that provides the refresh token target for the provider.
-    public typealias RefreshTokenClosure = ()->Target
+    public typealias RefreshTokenClosure = (AccessTokenStore)->Target
     
     /// The moya provider
     public let provider: MoyaProvider<Target>
@@ -193,7 +193,7 @@ extension OAuthProvider: OAuthProviderType {
         self.notify(.didStartAuthenticationChallenge)
         // Perform token refresh request
         
-        let refreshTokenTarget = refreshTokenClosure()
+        let refreshTokenTarget = refreshTokenClosure(accessTokenStore)
         requestNormal(refreshTokenTarget) { (result) in
             defer { self.isRefreshingToken = false }
             
