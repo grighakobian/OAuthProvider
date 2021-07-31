@@ -27,11 +27,11 @@ extension Operation: Cancellable {}
 /// Cancellable operation
 final class CancellableOperation: Operation {
     
-    private let innerOperation: ()->Cancellable
+    private let requestClosure: ()->Cancellable
     private(set) var innerCancellable: Cancellable?
     
-    init(_ operation: @escaping ()->Cancellable) {
-        self.innerOperation = operation
+    init(_ requestClosure: @escaping ()->Cancellable) {
+        self.requestClosure = requestClosure
         super.init()
     }
     
@@ -40,7 +40,7 @@ final class CancellableOperation: Operation {
             innerCancellable?.cancel()
             return
         }
-        innerCancellable = innerOperation()
+        innerCancellable = requestClosure()
     }
     
     override func cancel() {
