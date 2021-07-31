@@ -41,16 +41,6 @@ final class CancellableOperation: Operation {
             return
         }
         innerCancellable = innerOperation()
-        super.main()
-    }
-    
-    override func start() {
-        if isCancelled {
-            innerCancellable?.cancel()
-            return
-        }
-        innerCancellable = innerOperation()
-        super.start()
     }
     
     override func cancel() {
