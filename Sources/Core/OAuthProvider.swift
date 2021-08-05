@@ -129,7 +129,7 @@ extension OAuthProvider: OAuthProviderType {
                 case .success(let response):
                     self.handleSuccessResponse(response, for: target, completion: completion)
                 case .failure(let moyaError):
-                    guard moyaError.isUnauthrized(for: target) else {
+                    guard target.failDueToAuthenticationError(moyaError) else {
                         return completion(.failure(moyaError))
                     }
                     
@@ -208,7 +208,7 @@ extension OAuthProvider: OAuthProviderType {
                     completion(.failure(MoyaError.underlying(error, response)))
                 }
             case .failure(let moyaError):
-                if moyaError.isUnauthrized(for: refreshTokenTarget)  {
+                if refreshTokenTarget.failDueToAuthenticationError(moyaError) {
                     self.setRefreshTokenFailed(with: moyaError)
                 }
             }

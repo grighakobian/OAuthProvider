@@ -18,6 +18,7 @@
 //    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 //    THE SOFTWARE.
 
+import Moya
 
 /// Represents the OAuth status codes validation
 public enum OAuthValidationType {
@@ -27,6 +28,8 @@ public enum OAuthValidationType {
 
     /// Validate only the given status codes.
     case customCodes([Int])
+    
+    case customValidation((Response?, Error)->Bool)
 
     /// The list of HTTP status codes to validate.
     var statusCodes: [Int] {
@@ -35,6 +38,8 @@ public enum OAuthValidationType {
             return [401]
         case .customCodes(let codes):
             return codes
+        case .customValidation:
+            return []
         }
     }
 }
@@ -51,5 +56,24 @@ public extension OAuthValidatable {
     /// The type of OAuth validation to perform on the request. Default is `.basic`.
     var oauthValidationType: OAuthValidationType {
         return .basic
+    }
+    
+    
+    func failDueToAuthenticationError(_ moyaError: MoyaError)-> Bool {
+        switch moyaError {
+        case .underlying(let error, let response):
+            switch oauthValidationType {
+            case .basic, .customCodes:
+                if let statusCode = response?.statusCode {
+                    let statusCodes = oauthValidationType.statusCodes
+                    return statusCodes.contains(statusCode)
+                }
+                return false
+            case .customValidation(let validationClosure):
+                return validationClosure(response, error)
+            }
+        default:
+            return false
+        }
     }
 }
